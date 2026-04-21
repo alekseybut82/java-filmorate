@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -20,13 +20,6 @@ public class User {
 
     private String name;
 
-    @Past
+    @PastOrPresent
     private LocalDate birthday;
 }
-
-/*
-электронная почта не может быть пустой и должна содержать символ @;
-логин не может быть пустым и содержать пробелы;
-имя для отображения может быть пустым — в таком случае будет использован логин;
-дата рождения не может быть в будущем.
-*/
