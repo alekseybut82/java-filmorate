@@ -51,8 +51,7 @@ public class UserHandler {
 
         if (!user.getLogin().contains(" ")) {
             return true;
-        }
-        else {
+        } else {
             log.info("Вадиация не пройдена: логин {} не может содержать пробелы", user.getLogin());
             throw new ValidationException("логин не может содержать пробелы");
         }

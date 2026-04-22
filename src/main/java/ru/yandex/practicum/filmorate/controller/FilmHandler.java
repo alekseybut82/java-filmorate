@@ -51,8 +51,7 @@ public class FilmHandler {
 
         if (!film.getReleaseDate().isBefore(FIST_RELEASE_DATE)) {
             return;
-        }
-        else {
+        } else {
             log.info("Вадиация не пройдена: дата релиза {}  раньше 28 декабря 1895 года", film.getReleaseDate());
             throw new ValidationException("дата релиза — не раньше 28 декабря 1895 года");
         }
