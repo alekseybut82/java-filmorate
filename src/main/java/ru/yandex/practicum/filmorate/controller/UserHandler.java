@@ -24,8 +24,9 @@ public class UserHandler {
     public User create(@Valid User user) {
         user.setId(++currentID);
         validateUserLogin(user);
-        if (user.getName() == null || user.getName().isBlank())
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
+        }
         users.put(user.getId(), user);
         log.debug("пользователь {} создан", user.getName());
         return user;
@@ -48,8 +49,9 @@ public class UserHandler {
 
     public boolean validateUserLogin(User user) {
 
-        if (!user.getLogin().contains(" "))
+        if (!user.getLogin().contains(" ")) {
             return true;
+        }
         else {
             log.info("Вадиация не пройдена: логин {} не может содержать пробелы", user.getLogin());
             throw new ValidationException("логин не может содержать пробелы");
