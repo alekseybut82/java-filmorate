@@ -4,15 +4,16 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+
 import java.time.LocalDate;
 
 /**
  * Film.
  */
-@Data
-@Builder
+@Getter
+@Setter
+@NoArgsConstructor
 public class Film {
 
     private Long id;

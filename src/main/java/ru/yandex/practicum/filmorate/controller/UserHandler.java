@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundResourseException;
@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Data
+@NoArgsConstructor
 @Service
-public class UsersHandler {
+public class UserHandler {
 
     private final Map<Long, User> users = new HashMap<>();
     private Long currentID = 0L;
@@ -55,5 +55,4 @@ public class UsersHandler {
             throw new ValidationException("логин не может содержать пробелы");
         }
     }
-
 }

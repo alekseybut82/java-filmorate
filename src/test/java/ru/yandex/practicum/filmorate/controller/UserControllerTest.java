@@ -20,7 +20,7 @@ import java.nio.file.Files;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class UserControllerTest {
+public class UserControllerTest {
 
     private static final String PATH = "/users";
 

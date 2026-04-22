@@ -14,24 +14,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UsersHandler usersHandler;
+    private final UserHandler userHandler;
     private Long currentID = 0L;
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("Старт добавления пользователя: {}", user.getName());
-        return usersHandler.create(user);
+        return userHandler.create(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Старт обновления пользователя: {}", user.getName());
-        return usersHandler.update(user);
+        return userHandler.update(user);
     }
 
     @GetMapping
     public List<User> getAll() {
-        return usersHandler.getAll();
+        return userHandler.getAll();
     }
 
 }

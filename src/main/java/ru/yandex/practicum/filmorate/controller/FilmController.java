@@ -14,23 +14,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final FilmsHandler filmsHandler;
+    private final FilmHandler filmHandler;
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("Старт добавления фильма: {}", film.getName());
-        return filmsHandler.create(film);
+        return filmHandler.create(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         log.info("Старт обновления фильма: {}", film.getName());
-        return filmsHandler.update(film);
+        return filmHandler.update(film);
     }
 
     @GetMapping
     public List<Film> getAll() {
-        return filmsHandler.getAll();
+        return filmHandler.getAll();
     }
 
 }

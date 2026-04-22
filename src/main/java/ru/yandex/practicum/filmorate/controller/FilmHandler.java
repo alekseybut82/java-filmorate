@@ -1,9 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-//import org.hibernate.validator.internal.metadata.aggregated.rule.OverridingMethodMustNotAlterParameterConstraints;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundResourseException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -16,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Data
+@NoArgsConstructor
 @Service
-public class FilmsHandler {
+public class FilmHandler {
 
     private final Map<Long, Film> films = new HashMap<>();
     private Long currentID = 0L;
