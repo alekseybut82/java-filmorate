@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.storage;
 
 import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @NoArgsConstructor
 @Service
-public class FilmHandler {
+public class InMemoryFilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
     private Long currentID = 0L;

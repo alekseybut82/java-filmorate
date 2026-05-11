@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.storage;
 
 import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
@@ -16,27 +16,26 @@ import java.util.Map;
 @Slf4j
 @NoArgsConstructor
 @Service
-public class UserHandler {
+public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
     private Long currentID = 0L;
 
+    @Override
     public User create(@Valid User user) {
         user.setId(++currentID);
-        validateUserLogin(user);
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
         users.put(user.getId(), user);
         log.debug("пользователь {} создан", user.getName());
         return user;
     }
 
+    @Override
     public List<User> getAll() {
         log.debug("подготовлен список из {} пользователей", users.size());
         return new ArrayList<>(users.values());
     }
 
+    @Override
     public User update(@Valid User user) {
         if (!users.containsKey(user.getId())) {
             log.info("попытка изменить данные пользователя с несуществующим id = {}", user.getId());
