@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "login": "doloreUpdate",
+    "name": "est adipisicing",
+    "email": "mail@yandex.ru",
+    "birthday": "1976-09-20"
+  },
+  {
+    "id": 2,
+    "login": "common",
+    "name": "common",
+    "email": "friend@common.ru",
+    "birthday": "2000-08-20"
+  }
+]
