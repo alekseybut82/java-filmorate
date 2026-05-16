@@ -1,16 +1,19 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
 @NoArgsConstructor
-public class User {
+@Setter
+@Getter
+public class UserRequestDto {
 
     private Long id;
 
@@ -22,6 +25,6 @@ public class User {
 
     private String name;
 
-    @PastOrPresent
+    @PastOrPresent(message = "дата не может быть в будущем")
     private LocalDate birthday;
 }

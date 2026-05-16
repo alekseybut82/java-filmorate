@@ -4,12 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundResourseException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.domain.User;
+import ru.yandex.practicum.filmorate.model.dto.UserRequestDto;
+import ru.yandex.practicum.filmorate.model.dto.UserResponseDto;
+import ru.yandex.practicum.filmorate.service.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -18,39 +19,42 @@ import java.util.List;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final UserMapper userMapper;
 
-    public User create(@Valid User user) {
+    public UserResponseDto create(UserRequestDto userRequestDto) {
+        User user = userMapper.toUser(userRequestDto);
         validateUserLogin(user);
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
         log.debug("Запрос на создание пользователя: {} прошел первичные проверки", user.getName());
-        userStorage.create(user);
-        return user;
+        user = userStorage.create(user);
+        UserResponseDto userResponseDto = userMapper.toUserResponseDto(user);
+        return userResponseDto;
     }
 
-    public List<User> getAll() {
-        log.debug("подготовлен список из {} пользователей", userStorage.size());
-        return new ArrayList<>(userStorage.values());
+    public List<UserResponseDto> getAll() {
+        return userStorage.getAll().stream()
+                .map(userMapper::toUserResponseDto)
+                .toList();
     }
 
-    public User update(@Valid User user) {
-        if (!userStorage.containsKey(user.getId())) {
-            log.info("попытка изменить данные пользователя с несуществующим id = {}", user.getId());
-            throw new NotFoundResourseException("попытка изменить фильм с несуществующим id = " + user.getId());
-        }
+    public UserResponseDto update(UserRequestDto userRequestDto) {
+        User user = userMapper.toUser(userRequestDto);
         validateUserLogin(user);
-        userStorage.put(user.getId(), user);
-        return user;
+        user = userStorage.update(user);
+        UserResponseDto userResponseDto = userMapper.toUserResponseDto(user);
+        return userResponseDto;
     }
 
     public boolean validateUserLogin(User user) {
 
-        if (!user.getLogin().contains(" ")) {
-            return true;
-        } else {
+        if (user.getLogin().contains(" ")) {
             log.info("Вадиация не пройдена: логин {} не может содержать пробелы", user.getLogin());
             throw new ValidationException("логин не может содержать пробелы");
         }
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+
+        return true;
     }
 }

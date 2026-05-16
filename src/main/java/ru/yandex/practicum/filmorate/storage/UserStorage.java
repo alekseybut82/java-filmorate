@@ -1,10 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import jakarta.validation.Valid;
-import ru.yandex.practicum.filmorate.exception.NotFoundResourseException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.domain.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface UserStorage {

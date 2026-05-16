@@ -3,10 +3,9 @@ package ru.yandex.practicum.filmorate.storage;
 import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundResourseException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.domain.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +14,8 @@ import java.util.Map;
 
 @Slf4j
 @NoArgsConstructor
-@Service
-public class InMemoryUserStorage implements UserStorage {
+@Component
+public class InMemoryUserStorageImpl implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
     private Long currentID = 0L;
@@ -25,7 +24,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User create(@Valid User user) {
         user.setId(++currentID);
         users.put(user.getId(), user);
-        log.debug("пользователь {} создан", user.getName());
+        log.debug("пользователь {} создан, id {}", user.getName(), user.getId());
         return user;
     }
 
@@ -41,18 +40,9 @@ public class InMemoryUserStorage implements UserStorage {
             log.info("попытка изменить данные пользователя с несуществующим id = {}", user.getId());
             throw new NotFoundResourseException("попытка изменить фильм с несуществующим id = " + user.getId());
         }
-        validateUserLogin(user);
         users.put(user.getId(), user);
+        log.debug("пользователь {}, id {} обновлен", user.getName(), user.getId());
         return user;
     }
 
-    public boolean validateUserLogin(User user) {
-
-        if (!user.getLogin().contains(" ")) {
-            return true;
-        } else {
-            log.info("Вадиация не пройдена: логин {} не может содержать пробелы", user.getLogin());
-            throw new ValidationException("логин не может содержать пробелы");
-        }
-    }
 }

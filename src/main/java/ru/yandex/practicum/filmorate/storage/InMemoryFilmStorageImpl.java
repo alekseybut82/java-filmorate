@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundResourseException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.domain.Film;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @NoArgsConstructor
 @Service
-public class InMemoryFilmStorage {
+public class InMemoryFilmStorageImpl {
 
     private final Map<Long, Film> films = new HashMap<>();
     private Long currentID = 0L;

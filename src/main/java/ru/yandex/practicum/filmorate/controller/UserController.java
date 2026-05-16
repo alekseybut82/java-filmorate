@@ -4,7 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.dto.UserRequestDto;
+import ru.yandex.practicum.filmorate.model.dto.UserResponseDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -18,19 +19,19 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public UserResponseDto create(@Valid @RequestBody UserRequestDto user) {
         log.info("Получен post запрос на добавления пользователя: {}", user.getName());
         return userService.create(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
+    public UserResponseDto update(@Valid @RequestBody UserRequestDto user) {
         log.info("Старт обновления пользователя: {}", user.getName());
         return userService.update(user);
     }
 
     @GetMapping
-    public List<User> getAll() {
+    public List<UserResponseDto> getAll() {
         return userService.getAll();
     }
 
