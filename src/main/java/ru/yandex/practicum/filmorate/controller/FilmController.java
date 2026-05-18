@@ -4,8 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.domain.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorageImpl;
+import ru.yandex.practicum.filmorate.model.dto.FilmRequestDto;
+import ru.yandex.practicum.filmorate.model.dto.FilmResponseDto;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
 
@@ -15,23 +16,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final InMemoryFilmStorageImpl inMemoryFilmStorageImpl;
+    private final FilmService filmService;
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    public FilmResponseDto create(@Valid @RequestBody FilmRequestDto film) {
         log.info("Старт добавления фильма: {}", film.getName());
-        return inMemoryFilmStorageImpl.create(film);
+        return filmService.create(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
+    public FilmResponseDto update(@Valid @RequestBody FilmRequestDto film) {
         log.info("Старт обновления фильма: {}", film.getName());
-        return inMemoryFilmStorageImpl.update(film);
+        return filmService.update(film);
     }
 
     @GetMapping
-    public List<Film> getAll() {
-        return inMemoryFilmStorageImpl.getAll();
+    public List<FilmResponseDto> getAll() {
+        return filmService.getAll();
     }
 
 }

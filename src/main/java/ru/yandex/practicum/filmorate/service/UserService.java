@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,12 +21,7 @@ public class UserService {
     private final UserMapper userMapper;
 
     public UserResponseDto create(UserRequestDto userRequestDto) {
-        User user = userMapper.toUser(userRequestDto);
-        validateUserLogin(user);
-        log.debug("Запрос на создание пользователя: {} прошел первичные проверки", user.getName());
-        user = userStorage.create(user);
-        UserResponseDto userResponseDto = userMapper.toUserResponseDto(user);
-        return userResponseDto;
+        return userMapper.toUserResponseDto(userStorage.create(validateUserLogin(userMapper.toUser(userRequestDto))));
     }
 
     public List<UserResponseDto> getAll() {
@@ -37,17 +31,13 @@ public class UserService {
     }
 
     public UserResponseDto update(UserRequestDto userRequestDto) {
-        User user = userMapper.toUser(userRequestDto);
-        validateUserLogin(user);
-        user = userStorage.update(user);
-        UserResponseDto userResponseDto = userMapper.toUserResponseDto(user);
-        return userResponseDto;
+        return userMapper.toUserResponseDto(userStorage.update(validateUserLogin(userMapper.toUser(userRequestDto))));
     }
 
-    public boolean validateUserLogin(User user) {
+    public User validateUserLogin(User user) {
 
         if (user.getLogin().contains(" ")) {
-            log.info("Вадиация не пройдена: логин {} не может содержать пробелы", user.getLogin());
+            log.info("Валидация не пройдена: логин {} не может содержать пробелы", user.getLogin());
             throw new ValidationException("логин не может содержать пробелы");
         }
 
@@ -55,6 +45,43 @@ public class UserService {
             user.setName(user.getLogin());
         }
 
-        return true;
+        return user;
+    }
+
+    public void addFriend(String id, String friendId) {
+
+        Long userID = Long.valueOf(id);
+        Long friendUserId = Long.valueOf(friendId);
+
+        if (!userStorage.isUserExists(userID)) {
+            /// исключение
+        } else if (!userStorage.isUserExists(friendUserId)) {
+            /// исключение
+        }
+
+        userStorage.addFriend(userID, friendUserId);
+        userStorage.addFriend(userID, friendUserId);
+    }
+
+    public void removeFriend(String id, String friendId) {
+
+        Long userID = Long.valueOf(id);
+        Long friendUserId = Long.valueOf(friendId);
+
+        if (!userStorage.isUserExists(userID)) {
+            /// исключение
+        } else if (!userStorage.isUserExists(friendUserId)) {
+            /// исключение
+        }
+
+        if (!userStorage.removeFriend(userID, friendUserId)) {
+            log.info("Пользовать id = {} не являлся другом пользователя id = {}, операция удаления из друзей не выполнялась",
+                    friendId, id);
+        }
+
+        if (!userStorage.removeFriend(friendUserId, userID)) {
+            log.info("Пользовать id = {} не являлся другом пользователя id = {}, операция удаления из друзей не выполнялась",
+                    id, friendId);
+        }
     }
 }

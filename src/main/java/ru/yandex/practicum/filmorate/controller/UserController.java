@@ -35,4 +35,17 @@ public class UserController {
         return userService.getAll();
     }
 
+    //PUT /users/{id}/friends/{friendId}
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@RequestParam String id, @RequestParam String friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+//    DELETE /users/{id}/friends/{friendId}
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@RequestParam String id, @RequestParam String friendId) {
+        userService.removeFriend(id, friendId);
+    }
+
+//GET /users/{id}/friends
 }

@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.model.dto.UserResponseDto;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
+
     UserResponseDto toUserResponseDto(User user);
+
     User toUser(UserRequestDto dto);
 }
