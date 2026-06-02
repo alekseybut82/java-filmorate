@@ -1,16 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundResourceException;
 import ru.yandex.practicum.filmorate.model.domain.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @NoArgsConstructor
@@ -21,7 +17,7 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     private Long currentID = 0L;
 
     @Override
-    public Film create(@Valid Film film) {
+    public Film create(Film film) {
         film.setId(++currentID);
         films.put(film.getId(), film);
         log.debug("фильм {} создан", film.getName());
@@ -35,12 +31,48 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film update(@Valid Film film) {
+    public Film update(Film film) {
         if (!films.containsKey(film.getId())) {
-            log.info("попытка изменить фильм с несуществующим id = {}", film.getId());
+            log.debug("попытка изменить фильм с несуществующим id = {}", film.getId());
             throw new NotFoundResourceException("попытка изменить фильм с несуществующим id = " + film.getId());
         }
         films.put(film.getId(), film);
         return film;
+    }
+
+    @Override
+    public Optional<Film> findFilmById(Long filmId) {
+        return Optional.ofNullable(films.get(filmId));
+    }
+
+    @Override
+    public boolean addLike(Long filmId, Long idUser) {
+        return films.get(filmId).getUserLikes().add(idUser);
+    }
+
+    @Override
+    public boolean removeLike(Long filmId, Long idUser) {
+        return films.get(filmId).getUserLikes().remove(idUser);
+    }
+
+    @Override
+    public List<Film> findMostPopularFilm(Integer countInt) {
+        PriorityQueue<Film> priorityQueue = new PriorityQueue<>(countInt, Comparator.comparing(film -> film.getUserLikes().size()));
+
+        for (Film film : films.values()) {
+            int likesCount = film.getUserLikes().size();
+
+            if (priorityQueue.size() < countInt) {
+                priorityQueue.offer(film);
+            } else if (likesCount > priorityQueue.peek().getUserLikes().size()) {
+                priorityQueue.poll();
+                priorityQueue.offer(film);
+            }
+        }
+
+        return priorityQueue.stream()
+                .sorted(Comparator.comparing(film -> film.getUserLikes().size(),
+                        Comparator.reverseOrder()))
+                .toList();
     }
 }

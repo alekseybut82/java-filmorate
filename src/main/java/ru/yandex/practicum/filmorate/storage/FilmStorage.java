@@ -1,15 +1,23 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import jakarta.validation.Valid;
 import ru.yandex.practicum.filmorate.model.domain.Film;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FilmStorage {
 
-    public Film create(@Valid Film film);
+    Film create(Film film);
 
-    public List<Film> getAll();
+    List<Film> getAll();
 
-    public Film update(@Valid Film film);
+    Film update(Film film);
+
+    Optional<Film> findFilmById(Long filmId);
+
+    boolean addLike(Long filmId, Long idIuser);
+
+    boolean removeLike(Long filmId, Long idUser);
+
+    List<Film> findMostPopularFilm(Integer countInt);
 }

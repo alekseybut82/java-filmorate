@@ -10,9 +10,14 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class FilmResponseDto {
+
     private Long id;
+
     private String name;
+
     private String description;
+
     private LocalDate releaseDate;
+
     private Long duration;
 }

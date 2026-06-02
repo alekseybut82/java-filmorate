@@ -20,19 +20,36 @@ public class FilmController {
 
     @PostMapping
     public FilmResponseDto create(@Valid @RequestBody FilmRequestDto film) {
-        log.info("Старт добавления фильма: {}", film.getName());
+        log.info("Запрос на добавление фильма: {}", film.getName());
         return filmService.create(film);
     }
 
     @PutMapping
     public FilmResponseDto update(@Valid @RequestBody FilmRequestDto film) {
-        log.info("Старт обновления фильма: {}", film.getName());
+        log.info("Запрос на обновление фильма: {}", film.getName());
         return filmService.update(film);
     }
 
     @GetMapping
     public List<FilmResponseDto> getAll() {
+        log.info("Запрос на получение списка всех фильмов");
         return filmService.getAll();
     }
 
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable String id, @PathVariable String userId) {
+        log.info("Запрос на установку like для фильма от {} пользователь {}", id, userId);
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable String id, @PathVariable String userId) {
+        log.info("Запрос на удаление like");
+        filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<FilmResponseDto> mostPopularFilm(@RequestParam(defaultValue = "10") String count) {
+        return filmService.findMostPopularFilm(count);
+    }
 }

@@ -1,0 +1,10 @@
+#уровень логирования
+logging:
+ level:
+   ru.yandex.practicum.filmorate.FilmorateApplication: DEBUG
+   org.zalando.logbook: TRACE
+
+app:
+  film:
+    first-release-date: 1895-12-28
+

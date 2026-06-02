@@ -7,10 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundResourceException;
 import ru.yandex.practicum.filmorate.model.domain.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @NoArgsConstructor
@@ -38,16 +35,11 @@ public class InMemoryUserStorageImpl implements UserStorage {
     public User update(@Valid User user) {
         if (!users.containsKey(user.getId())) {
             log.info("попытка изменить данные пользователя с несуществующим id = {}", user.getId());
-            throw new NotFoundResourceException("попытка изменить фильм с несуществующим id = " + user.getId());
+            throw new NotFoundResourceException("попытка изменить пользователя с несуществующим id = " + user.getId());
         }
         users.put(user.getId(), user);
         log.debug("пользователь {}, id {} обновлен", user.getName(), user.getId());
         return user;
-    }
-
-    @Override
-    public boolean isUserExists(Long userID) {
-        return users.containsKey(userID);
     }
 
     @Override
@@ -60,4 +52,16 @@ public class InMemoryUserStorageImpl implements UserStorage {
         return users.get(userID).getFriendIds().remove(friendUserId);
     }
 
+    @Override
+    public List<User> getUsersById(Collection<?> usersId) {
+        return usersId.stream()
+                .map(users::get)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    @Override
+    public Optional<User> findUserById(Long userId) {
+        return Optional.ofNullable(users.get(userId));
+    }
 }

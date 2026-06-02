@@ -26,26 +26,37 @@ public class UserController {
 
     @PutMapping
     public UserResponseDto update(@Valid @RequestBody UserRequestDto user) {
-        log.info("Старт обновления пользователя: {}", user.getName());
+        log.info("Запрос на обновление пользователя: {}", user.getName());
         return userService.update(user);
     }
 
     @GetMapping
     public List<UserResponseDto> getAll() {
+        log.info("Получен запрос всех пользователей");
         return userService.getAll();
     }
 
-    //PUT /users/{id}/friends/{friendId}
     @PutMapping("/{id}/friends/{friendId}")
-    public void addFriend(@RequestParam String id, @RequestParam String friendId) {
+    public void addFriend(@PathVariable String id, @PathVariable String friendId) {
+        log.info("Получен запрос на добавления друга {} для пользователя {}", friendId, id);
         userService.addFriend(id, friendId);
     }
 
-//    DELETE /users/{id}/friends/{friendId}
     @DeleteMapping("/{id}/friends/{friendId}")
-    public void removeFriend(@RequestParam String id, @RequestParam String friendId) {
+    public void removeFriend(@PathVariable String id, @PathVariable String friendId) {
+        log.info("Получен запрос на удаление друга {} для пользователя {}", friendId, id);
         userService.removeFriend(id, friendId);
     }
 
-//GET /users/{id}/friends
+    @GetMapping("/{id}/friends")
+    public List<UserResponseDto> getFriends(@PathVariable String id) {
+        log.info("Получен запрос списка друзей для {}", id);
+        return userService.getUserFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<UserResponseDto> getCommonFriends(@PathVariable String id, @PathVariable String otherId) {
+        log.info("Получен запрос списка общих друзей пользователя {} с пользователем {}", otherId, id);
+        return userService.getCommonFriends(id, otherId);
+    }
 }
