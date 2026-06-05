@@ -117,7 +117,7 @@ public class UserService {
     }
 
     public boolean isUserAbsent(Long userId) {
-        return userStorage.findUserById(userId).isPresent();
+        return userStorage.findUserById(userId).isEmpty();
     }
 
 }
