@@ -44,16 +44,16 @@ public class InMemoryUserStorageImpl implements UserStorage {
 
     @Override
     public boolean addFriend(Long userID, Long friendUserId) {
-        return users.get(userID).
-                getFriendIds().
-                add(friendUserId);
+        return users.get(userID)
+                .getFriendIds()
+                .add(friendUserId);
     }
 
     @Override
     public boolean removeFriend(Long userID, Long friendUserId) {
         return users.get(userID)
-                .getFriendIds().
-                remove(friendUserId);
+                .getFriendIds()
+                .remove(friendUserId);
     }
 
     @Override
