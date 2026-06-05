@@ -4,7 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.dto.FilmRequestDto;
+import ru.yandex.practicum.filmorate.model.dto.FilmResponseDto;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
 
@@ -14,23 +17,43 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final FilmHandler filmHandler;
+    private final FilmService filmService;
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        log.info("Старт добавления фильма: {}", film.getName());
-        return filmHandler.create(film);
+    public FilmResponseDto create(@Valid @RequestBody FilmRequestDto film) {
+        log.info("Запрос на добавление фильма: {}", film.getName());
+        return filmService.create(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        log.info("Старт обновления фильма: {}", film.getName());
-        return filmHandler.update(film);
+    public FilmResponseDto update(@Valid @RequestBody FilmRequestDto film) {
+        log.info("Запрос на обновление фильма: {}", film.getName());
+        return filmService.update(film);
     }
 
     @GetMapping
-    public List<Film> getAll() {
-        return filmHandler.getAll();
+    public List<FilmResponseDto> getAll() {
+        log.info("Запрос на получение списка всех фильмов");
+        return filmService.getAll();
     }
 
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("Запрос на установку like для фильма от {} пользователь {}", id, userId);
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("Запрос на удаление like");
+        filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<FilmResponseDto> mostPopularFilm(@RequestParam(defaultValue = "10") int count) {
+        if (count < 1) {
+            throw new ValidationException("Количество фильмов в списке не может быть меньше 1: " + count);
+        }
+        return filmService.findMostPopularFilm(count);
+    }
 }
