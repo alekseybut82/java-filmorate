@@ -47,32 +47,24 @@ public class InMemoryFilmStorageImpl implements FilmStorage {
 
     @Override
     public boolean addLike(Long filmId, Long idUser) {
-        return films.get(filmId).getUserLikes().add(idUser);
+        return films.get(filmId)
+                .getUserLikes()
+                .add(idUser);
     }
 
     @Override
     public boolean removeLike(Long filmId, Long idUser) {
-        return films.get(filmId).getUserLikes().remove(idUser);
+        return films.get(filmId)
+                .getUserLikes()
+                .remove(idUser);
     }
 
     @Override
-    public List<Film> findMostPopularFilm(Integer countInt) {
-        PriorityQueue<Film> priorityQueue = new PriorityQueue<>(countInt, Comparator.comparing(film -> film.getUserLikes().size()));
-
-        for (Film film : films.values()) {
-            int likesCount = film.getUserLikes().size();
-
-            if (priorityQueue.size() < countInt) {
-                priorityQueue.offer(film);
-            } else if (likesCount > priorityQueue.peek().getUserLikes().size()) {
-                priorityQueue.poll();
-                priorityQueue.offer(film);
-            }
-        }
-
-        return priorityQueue.stream()
+    public List<Film> findMostPopularFilm(Integer count) {
+        return films.values().stream()
                 .sorted(Comparator.comparing(film -> film.getUserLikes().size(),
                         Comparator.reverseOrder()))
+                .limit(count)
                 .toList();
     }
 }

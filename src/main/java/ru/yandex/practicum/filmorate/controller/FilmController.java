@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.model.dto.FilmResponseDto;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -37,19 +38,22 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable String id, @PathVariable String userId) {
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Запрос на установку like для фильма от {} пользователь {}", id, userId);
         filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLike(@PathVariable String id, @PathVariable String userId) {
+    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Запрос на удаление like");
         filmService.removeLike(id, userId);
     }
 
     @GetMapping("/popular")
-    public List<FilmResponseDto> mostPopularFilm(@RequestParam(defaultValue = "10") String count) {
+    public List<FilmResponseDto> mostPopularFilm(@RequestParam(defaultValue = "10") int count) {
+        if (count < 1) {
+            throw new ValidationException("Количество фильмов в списке не может быть меньше 1: " + count);
+        }
         return filmService.findMostPopularFilm(count);
     }
 }

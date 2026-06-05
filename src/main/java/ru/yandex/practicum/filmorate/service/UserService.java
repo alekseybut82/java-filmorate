@@ -23,7 +23,10 @@ public class UserService {
     private final UserMapper userMapper;
 
     public UserResponseDto create(UserRequestDto userRequestDto) {
-        return userMapper.toUserResponseDto(userStorage.create(applyUserDefaultsAndValidate(userMapper.toUser(userRequestDto))));
+        User userRequest = userMapper.toUser(userRequestDto);
+        applyUserDefaultsAndValidate(userRequest);
+        User userResponse = userStorage.create(userRequest);
+        return userMapper.toUserResponseDto(userResponse);
     }
 
     public List<UserResponseDto> getAll() {
@@ -33,10 +36,13 @@ public class UserService {
     }
 
     public UserResponseDto update(UserRequestDto userRequestDto) {
-        return userMapper.toUserResponseDto(userStorage.update(applyUserDefaultsAndValidate(userMapper.toUser(userRequestDto))));
+        User userRequest = userMapper.toUser(userRequestDto);
+        applyUserDefaultsAndValidate(userRequest);
+        User userResponse = userStorage.update(userRequest);
+        return userMapper.toUserResponseDto(userResponse);
     }
 
-    public User applyUserDefaultsAndValidate(User user) {
+    private User applyUserDefaultsAndValidate(User user) {
 
         if (user.getLogin().contains(" ")) {
             log.info("Валидация не пройдена: логин {} не может содержать пробелы", user.getLogin());
@@ -50,60 +56,49 @@ public class UserService {
         return user;
     }
 
-    public void addFriend(String id, String friendId) {
+    public void addFriend(Long userId, Long friendId) {
 
-        var userID = transformID(id);
-        var friendUserId = transformID(friendId);
+        userStorage.findUserById(userId)
+                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + userId + " не найден"));
 
-        userStorage.findUserById(userID)
-                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + userID + " не найден"));
+        userStorage.findUserById(friendId)
+                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + friendId + " не найден"));
 
-        userStorage.findUserById(friendUserId)
-                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + friendUserId + " не найден"));
-
-        userStorage.addFriend(userID, friendUserId);
-        userStorage.addFriend(friendUserId, userID);
+        userStorage.addFriend(userId, friendId);
+        userStorage.addFriend(friendId, userId);
     }
 
-    public void removeFriend(String id, String friendId) {
+    public void removeFriend(Long userId, Long friendId) {
 
-        var userID = transformID(id);
-        var friendUserId = transformID(friendId);
+        userStorage.findUserById(userId)
+                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + userId + " не найден"));
 
-        userStorage.findUserById(userID)
-                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + userID + " не найден"));
+        userStorage.findUserById(friendId)
+                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + friendId + " не найден"));
 
-        userStorage.findUserById(friendUserId)
-                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + friendUserId + " не найден"));
-
-        if (!userStorage.removeFriend(userID, friendUserId)) {
+        if (!userStorage.removeFriend(userId, friendId)) {
             log.warn("Пользовать id = {} не являлся другом пользователя id = {}, операция удаления из друзей не выполнялась",
-                    friendId, id);
+                    friendId, userId);
         }
 
-        if (!userStorage.removeFriend(friendUserId, userID)) {
+        if (!userStorage.removeFriend(friendId, userId)) {
             log.warn("Пользовать id = {} не являлся другом пользователя id = {}, операция удаления из друзей не выполнялась",
-                    id, friendId);
+                    userId, friendId);
         }
     }
 
-    public List<UserResponseDto> getUserFriends(String id) {
+    public List<UserResponseDto> getUserFriends(Long userId) {
 
-        var userID = transformID(id);
-
-        Set<Long> friendsID = userStorage.findUserById(userID)
-                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + userID + " не найден"))
+        Set<Long> friendsId = userStorage.findUserById(userId)
+                .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + userId + " не найден"))
                 .getFriendIds();
 
-        return userStorage.getUsersById(friendsID).stream()
+        return userStorage.getUsersById(friendsId).stream()
                 .map(userMapper::toUserResponseDto)
                 .toList();
     }
 
-    public List<UserResponseDto> getCommonFriends(String id, String otherId) {
-
-        var userId = transformID(id);
-        var otherUserId = transformID(otherId);
+    public List<UserResponseDto> getCommonFriends(Long userId, Long otherUserId) {
 
         Set<Long> userFriendsId = userStorage.findUserById(userId)
                 .orElseThrow(() -> new NotFoundResourceException("Пользователь id = " + userId + " не найден"))
@@ -122,17 +117,7 @@ public class UserService {
     }
 
     public boolean isUserAbsent(Long userId) {
-        if (userStorage.findUserById(userId).isPresent())
-            return false;
-        else
-            return true;
+        return userStorage.findUserById(userId).isPresent();
     }
 
-    public Long transformID(String id) {
-        try {
-            return Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            throw new ValidationException("Некорректный формат Id " + id);
-        }
-    }
 }

@@ -26,7 +26,10 @@ public class FilmService {
     private final AppConfig appConfig;
 
     public FilmResponseDto create(FilmRequestDto filmRequestDto) {
-        return filmMapper.toFilmResponseDto(filmStorage.create(validateReleaseDate(filmMapper.toFilm(filmRequestDto))));
+        Film filmRequest = filmMapper.toFilm(filmRequestDto);
+        validateReleaseDate(filmRequest);
+        Film filmResponse = filmStorage.create(filmRequest);
+        return filmMapper.toFilmResponseDto(filmResponse);
     }
 
     public List<FilmResponseDto> getAll() {
@@ -36,10 +39,13 @@ public class FilmService {
     }
 
     public FilmResponseDto update(FilmRequestDto filmRequestDto) {
-        return filmMapper.toFilmResponseDto(filmStorage.update(validateReleaseDate(filmMapper.toFilm(filmRequestDto))));
+        Film filmRequest = filmMapper.toFilm(filmRequestDto);
+        validateReleaseDate(filmRequest);
+        Film filmResponse = filmStorage.update(filmRequest);
+        return filmMapper.toFilmResponseDto(filmResponse);
     }
 
-    public Film validateReleaseDate(Film film) {
+    private Film validateReleaseDate(Film film) {
 
         LocalDate firstReleaseDate = appConfig.getFirstReleaseDate();
 
@@ -50,36 +56,21 @@ public class FilmService {
         return film;
     }
 
-    public void addLike(String id, String userId) {
-
-        var filmId = transformID(id);
-        var idUser = userService.transformID(userId);
-
-        validateFilmAndUserExists(filmId, idUser);
-
-        filmStorage.addLike(filmId, idUser);
+    public void addLike(Long filmId, Long userId) {
+        validateFilmAndUserExists(filmId, userId);
+        filmStorage.addLike(filmId, userId);
     }
 
-    public void removeLike(String id, String userId) {
-
-        var filmId = transformID(id);
-        var idUser = userService.transformID(userId);
-
-        validateFilmAndUserExists(filmId, idUser);
-
-        if (filmStorage.removeLike(filmId, idUser)) {
+    public void removeLike(Long filmId, Long userId) {
+        validateFilmAndUserExists(filmId, userId);
+        if (filmStorage.removeLike(filmId, userId)) {
             log.warn("У фильма id {} нет like от пользователя {}, операция like не выполнялась",
-                    filmId, idUser);
+                    filmId, userId);
         }
     }
 
-    public List<FilmResponseDto> findMostPopularFilm(String count) {
-        Integer countInt = Integer.parseInt(count);
-        if (countInt < 1) {
-            throw new ValidationException("Количество фильмов в списке не может быть меньше 1: " + countInt);
-        }
-
-        return filmStorage.findMostPopularFilm(countInt).stream()
+    public List<FilmResponseDto> findMostPopularFilm(int count) {
+        return filmStorage.findMostPopularFilm(count).stream()
                 .map(filmMapper::toFilmResponseDto)
                 .toList();
     }
@@ -90,14 +81,6 @@ public class FilmService {
 
         if (userService.isUserAbsent(userId)) {
             throw new NotFoundResourceException("Пользователь id = " + userId + " не найден");
-        }
-    }
-
-    public Long transformID(String id) {
-        try {
-            return Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            throw new ValidationException("Некорректный формат Id " + id);
         }
     }
 
